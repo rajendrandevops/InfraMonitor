@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("InfraMonitor")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+60352b9208dcca50f2edd3f86ba5b381cdf72482")]
 [assembly: System.Reflection.AssemblyProductAttribute("InfraMonitor")]
 [assembly: System.Reflection.AssemblyTitleAttribute("InfraMonitor")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
