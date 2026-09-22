@@ -1,0 +1,338 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>InfraMonitor</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">IM</div>
+        <div class="brand-copy">
+          <h1>InfraMonitor</h1>
+          <span>Infrastructure Monitoring</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav" aria-label="Primary navigation">
+        <div class="nav-section">Monitoring</div>
+        <button class="nav-button active" type="button" data-view="dashboard">
+          <span class="nav-icon">●</span>
+          Dashboard
+        </button>
+        <button class="nav-button" type="button" data-view="alerts">
+          <span class="nav-icon">△</span>
+          Alerts
+        </button>
+        <button class="nav-button" type="button" data-view="settings">
+          <span class="nav-icon">⚙</span>
+          Settings
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="engine-indicator">
+          <span class="indicator-dot"></span>
+          <div>
+            <strong>Monitoring Active</strong>
+            <small>ICMP monitoring engine</small>
+          </div>
+        </div>
+        <div class="app-version">InfraMonitor</div>
+      </div>
+    </aside>
+
+    <main class="main-panel">
+      <header class="topbar">
+        <div class="topbar-title">
+          <h2>Infrastructure Monitor</h2>
+          <p>Production infrastructure overview</p>
+        </div>
+
+        <div class="topbar-actions">
+          <div id="backendStatus" class="backend-status"><span></span>READY</div>
+          <button id="refreshButton" class="toolbar-button" type="button" title="Refresh dashboard">↻</button>
+          <button id="tvModeButton" class="secondary-button" type="button">TV Mode</button>
+          <button id="generateReportButton" class="secondary-button" type="button">Generate Report</button>
+          <button id="addDeviceButton" class="primary-button" type="button">+ Add Device</button>
+          <button id="resetLayoutBtn" class="secondary-button" type="button">Reset Layout</button>
+        </div>
+      </header>
+
+      <section id="dashboardPanel" class="panel active">
+        <div class="summary-grid">
+          <div class="summary-card">
+            <span>Total</span>
+            <strong id="totalDevices">0</strong>
+            <small>Configured devices</small>
+          </div>
+          <div class="summary-card online">
+            <span>UP</span>
+            <strong id="upDevices">0</strong>
+            <small>Responding</small>
+          </div>
+          <div class="summary-card offline">
+            <span>DOWN</span>
+            <strong id="downDevices">0</strong>
+            <small>Requires attention</small>
+          </div>
+          <div class="summary-card unknown">
+            <span>UNKNOWN</span>
+            <strong id="unknownDevices">0</strong>
+            <small>Unverified</small>
+          </div>
+        </div>
+
+        <div class="toolbar-strip">
+          <input id="searchInput" type="search" placeholder="Search device or IP..." autocomplete="off" />
+          <select id="groupFilter">
+            <option value="all">All Groups</option>
+          </select>
+          <select id="statusFilter">
+            <option value="all">All Status</option>
+            <option value="up">UP</option>
+            <option value="down">DOWN</option>
+            <option value="unknown">UNKNOWN</option>
+          </select>
+          <button id="addGroupButton" class="primary-button" type="button">+ Create Group</button>
+        </div>
+
+        <section class="monitor-layout" aria-label="Infrastructure monitoring list">
+          <div id="monitorHeader" class="monitor-header-row" aria-label="Device table headers"></div>
+          <div id="monitorList" class="monitor-list" aria-live="polite"></div>
+        </section>
+
+        <section class="alerts-panel">
+          <div class="panel-header">
+            <div>
+              <h3>Recent Alerts</h3>
+              <p>Critical status events</p>
+            </div>
+          </div>
+          <div id="alertsList" class="alerts-list"></div>
+        </section>
+      </section>
+
+      <section id="alertsPanel" class="panel">
+        <div class="panel-header">
+          <div>
+            <h3>Alert Feed</h3>
+            <p>System event stream</p>
+          </div>
+        </div>
+        <div id="alertsPanelList" class="alerts-list"></div>
+      </section>
+
+      <section id="settingsPanel" class="panel">
+        <div class="panel-header">
+          <div>
+            <h3>Settings</h3>
+            <p>Configuration for monitoring and retention</p>
+          </div>
+        </div>
+
+        <form id="settingsForm" class="settings-form">
+          <label class="field">
+            <span>Default Ping Interval</span>
+            <input name="defaultPingInterval" type="number" min="1" max="300" />
+          </label>
+
+          <label class="field">
+            <span>Ping Timeout</span>
+            <input name="pingTimeout" type="number" min="500" max="10000" />
+          </label>
+
+          <label class="field">
+            <span>History Retention</span>
+            <input name="historyRetention" type="number" min="1" max="720" />
+          </label>
+
+          <label class="field checkbox-field">
+            <input type="checkbox" name="monitoringEnabled" />
+            <span>Monitoring Enabled</span>
+          </label>
+
+          <div class="form-actions settings-actions">
+            <button id="exportConfigButton" class="secondary-button" type="button">Export Configuration</button>
+            <label class="secondary-button import-button">
+              Import Configuration
+              <input id="importConfigInput" type="file" accept="application/json" hidden />
+            </label>
+            <button class="primary-button" type="submit">Save Settings</button>
+          </div>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <div id="deviceModal" class="modal-backdrop hidden" aria-hidden="true">
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="deviceModalTitle">
+      <div class="modal-header">
+        <h3 id="deviceModalTitle">Add Device</h3>
+        <button type="button" class="modal-close" data-close-modal="deviceModal" aria-label="Close">✕</button>
+      </div>
+
+      <form id="deviceForm">
+        <div class="form-grid">
+          <label class="field">
+            <span>Device Name</span>
+            <input name="name" type="text" required />
+          </label>
+
+          <label class="field">
+            <span>IP Address</span>
+            <input name="ipAddress" type="text" placeholder="192.168.1.10" required />
+          </label>
+
+          <label class="field">
+            <span>Group</span>
+            <select name="groupId"></select>
+          </label>
+
+          <label class="field">
+            <span>Ping Interval</span>
+            <input name="pingIntervalSeconds" type="number" min="1" max="300" value="5" required />
+          </label>
+
+          <label class="field checkbox-field">
+            <input type="checkbox" name="enabled" checked />
+            <span>Enabled</span>
+          </label>
+        </div>
+
+        <div class="form-actions">
+          <button class="secondary-button" type="button" data-close-modal="deviceModal">Cancel</button>
+          <button class="primary-button" type="submit">Save Device</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="groupModal" class="modal-backdrop hidden" aria-hidden="true">
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="groupModalTitle">
+      <div class="modal-header">
+        <h3 id="groupModalTitle">Create Group</h3>
+        <button type="button" class="modal-close" data-close-modal="groupModal" aria-label="Close">✕</button>
+      </div>
+
+      <form id="groupForm">
+        <div class="form-grid single-column">
+          <label class="field">
+            <span>Group Name</span>
+            <input name="name" type="text" required />
+          </label>
+
+          <label class="field">
+            <span>Description</span>
+            <input name="description" type="text" />
+          </label>
+        </div>
+
+        <div class="form-actions">
+          <button class="secondary-button" type="button" data-close-modal="groupModal">Cancel</button>
+          <button class="primary-button" type="submit">Save Group</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="deviceDetailModal" class="modal-backdrop hidden" aria-hidden="true">
+    <div class="modal-panel detail-panel" role="dialog" aria-modal="true" aria-labelledby="deviceDetailTitle">
+      <div class="modal-header">
+        <h3 id="deviceDetailTitle">Device Details</h3>
+        <button type="button" class="modal-close" data-close-modal="deviceDetailModal" aria-label="Close">✕</button>
+      </div>
+
+      <div id="deviceDetailContent" class="detail-content"></div>
+    </div>
+  </div>
+
+  <div id="historyModal" class="modal-backdrop hidden" aria-hidden="true">
+    <div class="modal-panel history-panel" role="dialog" aria-modal="true" aria-labelledby="historyModalTitle">
+      <div class="modal-header">
+        <div>
+          <h3 id="historyModalTitle">Device History</h3>
+        </div>
+        <button type="button" class="modal-close" data-close-modal="historyModal" aria-label="Close">✕</button>
+      </div>
+
+      <div class="history-toolbar">
+        <div id="historyInfo" class="history-meta"></div>
+        <div class="time-range-group">
+          <button class="range-button active" type="button" data-range="1H">1H</button>
+          <button class="range-button" type="button" data-range="6H">6H</button>
+          <button class="range-button" type="button" data-range="12H">12H</button>
+          <button class="range-button" type="button" data-range="24H">24H</button>
+          <button class="range-button" type="button" data-range="48H">48H</button>
+          <button class="range-button" type="button" data-range="72H">72H</button>
+          <button class="range-button" type="button" data-range="7D">7D</button>
+        </div>
+      </div>
+
+      <div id="historyList" class="history-list"></div>
+    </div>
+  </div>
+
+  <div id="reportModal" class="modal-backdrop hidden" aria-hidden="true">
+    <div class="modal-panel report-panel" role="dialog" aria-modal="true" aria-labelledby="reportModalTitle">
+      <div class="modal-header">
+        <div>
+          <h3 id="reportModalTitle">Generate Report</h3>
+        </div>
+        <button type="button" class="modal-close" data-close-modal="reportModal" aria-label="Close">✕</button>
+      </div>
+
+      <form id="reportForm" class="report-form">
+        <div class="form-grid">
+          <label class="field">
+            <span>Date Range</span>
+            <select name="reportRange">
+              <option value="today">Today</option>
+              <option value="24H">Last 24 Hours</option>
+              <option value="7D">Last 7 Days</option>
+              <option value="30D">Last 30 Days</option>
+              <option value="custom">Custom</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Group</span>
+            <select name="reportGroup">
+              <option value="all">All Groups</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Device</span>
+            <select name="reportDevice">
+              <option value="all">All Devices</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Status</span>
+            <select name="reportStatus">
+              <option value="all">All</option>
+              <option value="up">UP</option>
+              <option value="down">DOWN</option>
+              <option value="unknown">UNKNOWN</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="form-actions">
+          <button class="secondary-button" type="button" data-close-modal="reportModal">Cancel</button>
+          <button class="primary-button" type="submit">Generate Report</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

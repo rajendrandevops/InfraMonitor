@@ -1,0 +1,2 @@
+C:\Users\Admin\Desktop\InfraMonitor\release-final\appsettings.json
+C:\Users\Admin\Desktop\InfraMonitor\release-final\InfraMonitor.exe

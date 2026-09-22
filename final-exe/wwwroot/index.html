@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>InfraMonitor</title>
+  <link rel="stylesheet" href="/style.css?v=20260922tv-device-button18" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32" role="img"><path d="M4 18h5l3-8 4 14 3-9h9" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"/><circle cx="4" cy="18" r="1.5" fill="currentColor"/><circle cx="28" cy="15" r="1.5" fill="currentColor"/></svg></div>
+        <div class="brand-copy">
+          <h1>InfraMonitor</h1>
+          <span>Network &amp; Server Monitoring</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav" aria-label="Primary navigation">
+        <div class="nav-section">Monitoring</div>
+        <button class="nav-button active" type="button" data-view="dashboard">
+          <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1V10Z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="1.8"/></svg></span>
+          Dashboard
+        </button>
+        <button class="nav-button" type="button" data-view="alerts">
+          <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"/></svg></span>
+          Alerts
+          <span id="alertCount" class="nav-count" aria-label="Unread alerts" hidden>0</span>
+        </button>
+        <button class="nav-button" type="button" data-view="settings">
+          <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3M4.9 4.9 7 7m10 10 2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8"/></svg></span>
+          Settings
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="engine-indicator">
+          <span class="indicator-dot"></span>
+          <div>
+            <strong>Monitoring Active</strong>
+            <small>ICMP monitoring engine</small>
+          </div>
+        </div>
+        <div class="app-version">InfraMonitor</div>
+      </div>
+    </aside>
+
+    <main class="main-panel">
+      <header class="topbar">
+        <div class="topbar-title">
+          <h2>Infrastructure Monitor</h2>
+          <p>Production infrastructure overview</p>
+        </div>
+
+        <div class="topbar-actions">
+          <div id="backendStatus" class="backend-status"><span></span>All Systems Normal</div>
+          <button id="refreshButton" class="toolbar-button icon-button" type="button" title="Refresh dashboard"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.7-4L3 10m0 0V5m0 5h5M4 13a8 8 0 0 0 14.7 4L21 14m0 0v5m0-5h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"/></svg></button>
+          <button id="settingsToolbarButton" class="toolbar-button icon-button settings-button" type="button" title="Settings" data-view="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3M4.9 4.9 7 7m10 10 2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8"/></svg></button>
+          <button id="themeToggleButton" class="toolbar-button icon-button" type="button" title="Switch to light mode" aria-label="Switch to light mode"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v2m0 14v2M3 12h2m14 0h2M5.6 5.6 7 7m10 10 1.4 1.4M18.4 5.6 17 7M7 17l-1.4 1.4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
+          <button id="tvModeButton" class="secondary-button" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="13" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 21h8M12 18v3" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8"/></svg>TV Mode</button>
+          <button id="generateReportButton" class="secondary-button" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l3 3v15H6V3Zm9 0v4h4M9 12h6M9 16h6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"/></svg>Generate Report</button>
+          <button id="addDeviceButton" class="primary-button" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 8v8m-4-4h8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8"/></svg>Add Device</button>
+          <button id="resetLayoutBtn" class="secondary-button" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8a8 8 0 1 1 1 8M5 8V4m0 4h4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"/></svg>Reset Layout</button>
+        </div>
+      </header>
+
+      <section id="dashboardPanel" class="panel active">
+        <div class="summary-grid">
+          <div class="summary-card">
+            <span class="summary-icon total-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="5" rx="1" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="4" y="15" width="16" height="5" rx="1" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 7h.01M8 18h.01" stroke="currentColor" stroke-linecap="round" stroke-width="2.4"/></svg></span>
+            <span>Total</span>
+            <strong id="totalDevices">0</strong>
+            <small>Configured devices</small>
+          </div>
+          <div class="summary-card online">
+            <span class="summary-icon up-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 19V5m-6 6 6-6 6 6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg></span>
+            <span>UP</span>
+            <strong id="upDevices">0</strong>
+            <small>Responding</small>
+          </div>
+          <div class="summary-card offline">
+            <span class="summary-icon down-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 5v14m6-6-6 6-6-6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg></span>
+            <span>DOWN</span>
+            <strong id="downDevices">0</strong>
+            <small>Requires attention</small>
+          </div>
+          <div class="summary-card unknown">
+            <span class="summary-icon unknown-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9.8 9a2.3 2.3 0 1 1 3.8 1.7c-1 .8-1.6 1.2-1.6 2.3M12 16h.01" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8"/></svg></span>
+            <span>UNKNOWN</span>
+            <strong id="unknownDevices">0</strong>
+            <small>Unverified</small>
+          </div>
+        </div>
+
+        <div class="toolbar-strip">
+          <input id="searchInput" type="search" placeholder="Search device or IP..." autocomplete="off" />
+          <select id="groupFilter">
+            <option value="all">All Groups</option>
+          </select>
+          <select id="statusFilter">
+            <option value="all">All Status</option>
+            <option value="up">UP</option>
+            <option value="down">DOWN</option>
+            <option value="unknown">UNKNOWN</option>
+          </select>
+          <button id="addGroupButton" class="primary-button" type="button">+ Create Group</button>
+        </div>
+
+        <section id="monitorList" class="group-grid" aria-label="Infrastructure monitoring groups" aria-live="polite"></section>
+
+        <section class="dashboard-analytics" aria-label="Monitoring analytics">
+          <div class="latency-panel">
+            <div class="analytics-header">
+              <div><span class="section-kicker">LIVE HISTORY</span><h3>Network Latency</h3></div>
+              <div class="analytics-controls"><select id="dashboardDeviceFilter" aria-label="Latency graph device"><option value="all">All devices</option></select><div class="analytics-summary"><span>Average</span><strong id="dashboardAverageLatencySummary">--</strong></div></div>
+            </div>
+            <div class="range-tabs" role="group" aria-label="Latency time range">
+              <button class="range-button live-range" type="button" data-dashboard-range="LIVE">LIVE</button><button class="range-button" type="button" data-dashboard-range="1H">1H</button><button class="range-button" type="button" data-dashboard-range="6H">6H</button><button class="range-button" type="button" data-dashboard-range="12H">12H</button><button class="range-button active" type="button" data-dashboard-range="24H">24H</button><button class="range-button" type="button" data-dashboard-range="48H">48H</button><button class="range-button" type="button" data-dashboard-range="72H">72H</button><button class="range-button" type="button" data-dashboard-range="7D">7D</button>
+            </div>
+            <div class="dashboard-stats" aria-label="Latency statistics">
+              <div class="stat-box"><span>Max</span><strong id="dashboardMaxLatency">--</strong></div>
+              <div class="stat-box"><span>Average</span><strong id="dashboardAverageLatencyStat">--</strong></div>
+              <div class="stat-box"><span>Current</span><strong id="dashboardCurrentLatency">--</strong></div>
+            </div>
+            <div id="dashboardLatencyChart" class="dashboard-chart" aria-label="Real monitoring latency chart"></div>
+          </div>
+          <aside class="recent-alerts-panel">
+            <div class="analytics-header"><div><span class="section-kicker">EVENT STREAM</span><h3>Recent Alerts</h3></div><span class="alert-count-label" id="dashboardAlertCount">0</span></div>
+            <div id="dashboardRecentAlerts" class="recent-alerts-list"></div>
+          </aside>
+        </section>
+      </section>
+
+      <section id="alertsPanel" class="panel">
+        <div class="panel-header">
+          <div>
+            <h3>Alert Feed</h3>
+            <p>System event stream</p>
+          </div>
+        </div>
+        <div id="alertsPanelList" class="alerts-list"></div>
+      </section>
+
+      <section id="settingsPanel" class="panel">
+        <div class="panel-header">
+          <div>
+            <h3>Settings</h3>
+            <p>Configuration for monitoring and retention</p>
+          </div>
+          <button class="secondary-button" type="button" data-view="dashboard">← Back to Monitor</button>
+        </div>
+
+        <form id="settingsForm" class="settings-form">
+          <label class="field">
+            <span>Default Ping Interval</span>
+            <input name="defaultPingInterval" type="number" min="1" max="300" />
+          </label>
+
+          <label class="field">
+            <span>Ping Timeout</span>
+            <input name="pingTimeout" type="number" min="500" max="10000" />
+          </label>
+
+          <label class="field">
+            <span>History Retention</span>
+            <select name="historyRetention" required>
+              <option value="24">24 Hours</option>
+              <option value="48">48 Hours</option>
+              <option value="72">72 Hours</option>
+              <option value="168">7 Days</option>
+              <option value="336">14 Days</option>
+              <option value="720">30 Days</option>
+            </select>
+            <small class="field-help">How long real PingResults are retained.</small>
+          </label>
+
+          <label class="field checkbox-field">
+            <input type="checkbox" name="monitoringEnabled" />
+            <span>Monitoring Enabled</span>
+          </label>
+
+          <label class="field checkbox-field">
+            <input type="checkbox" name="alertSoundEnabled" />
+            <span>Alert Sound Enabled</span>
+          </label>
+
+          <label class="field">
+            <span>Alert Volume</span>
+            <input name="alertVolume" type="range" min="0" max="1" step="0.05" />
+          </label>
+
+          <div class="form-actions settings-actions">
+            <button id="testAlertSoundButton" class="secondary-button" type="button">Test Alert Sound</button>
+            <button id="exportConfigButton" class="secondary-button" type="button">Export Configuration</button>
+            <label class="secondary-button import-button">
+              Import Configuration
+              <input id="importConfigInput" type="file" accept="application/json" hidden />
+            </label>
+            <button class="primary-button" type="submit">Save Settings</button>
+          </div>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <button id="tvModeBackButton" class="tv-mode-back-button" type="button">← Back to Monitor</button>
+  <button id="tvSoundButton" class="tv-sound-button" type="button" title="Enable the three-beep DOWN alert">Enable Alert Sound</button>
+
+  <div id="deviceModal" class="modal-backdrop hidden" aria-hidden="true">
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="deviceModalTitle">
+      <div class="modal-header">
+        <h3 id="deviceModalTitle">Add Device</h3>
+        <button type="button" class="secondary-button" data-close-modal="deviceModal">← Back to Monitor</button>
+      </div>
+
+      <form id="deviceForm">
+        <div class="form-grid">
+          <label class="field">
+            <span>Device Name</span>
+            <input name="name" type="text" required />
+          </label>
+
+          <label class="field">
+            <span>IP Address</span>
+            <input name="ipAddress" type="text" placeholder="192.168.1.10" required />
+          </label>
+
+          <label class="field">
+            <span>Group</span>
+            <select name="groupId"></select>
+          </label>
+
+          <label class="field">
+            <span>Ping Interval</span>
+            <input name="pingIntervalSeconds" type="number" min="1" max="300" value="5" required />
+          </label>
+
+          <label class="field checkbox-field">
+            <input type="checkbox" name="enabled" checked />
+            <span>Enabled</span>
+          </label>
+        </div>
+
+        <div class="form-actions">
+          <button class="secondary-button" type="button" data-close-modal="deviceModal">Cancel</button>
+          <button class="primary-button" type="submit">Save Device</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="groupModal" class="modal-backdrop hidden" aria-hidden="true">
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="groupModalTitle">
+      <div class="modal-header">
+        <h3 id="groupModalTitle">Create Group</h3>
+        <button type="button" class="secondary-button" data-close-modal="groupModal">← Back to Monitor</button>
+      </div>
+      <form id="groupForm">
+        <div class="form-grid single-column">
+          <label class="field">
+            <span>Group Name</span>
+            <input name="name" type="text" required />
+          </label>
+          <label class="field">
+            <span>Description</span>
+            <input name="description" type="text" />
+          </label>
+        </div>
+        <div class="form-actions">
+          <button class="secondary-button" type="button" data-close-modal="groupModal">Cancel</button>
+          <button class="primary-button" type="submit">Save Group</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="reportModal" class="modal-backdrop hidden" aria-hidden="true">
+    <div class="modal-panel report-panel" role="dialog" aria-modal="true" aria-labelledby="reportModalTitle">
+      <div class="modal-header">
+        <h3 id="reportModalTitle">Generate Report</h3>
+        <button type="button" class="secondary-button" data-close-modal="reportModal">← Back to Monitor</button>
+      </div>
+      <form id="reportForm">
+        <div class="form-grid">
+          <label class="field">
+            <span>Range</span>
+            <select name="reportRange">
+              <option value="24H">Last 24 hours</option>
+              <option value="7D">Last 7 days</option>
+              <option value="30D">Last 30 days</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Group</span>
+            <select name="reportGroup"></select>
+          </label>
+          <label class="field">
+            <span>Device</span>
+            <select name="reportDevice"></select>
+          </label>
+          <label class="field">
+            <span>Status</span>
+            <select name="reportStatus">
+              <option value="all">All</option>
+              <option value="up">UP</option>
+              <option value="down">DOWN</option>
+              <option value="unknown">UNKNOWN</option>
+            </select>
+          </label>
+        </div>
+        <div class="form-actions">
+          <button class="secondary-button" type="button" data-close-modal="reportModal">Cancel</button>
+          <button class="primary-button" type="submit">Generate</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="deviceDetailModal" class="modal-backdrop hidden" aria-hidden="true">
+    <div class="modal-panel detail-panel" role="dialog" aria-modal="true" aria-labelledby="deviceDetailTitle">
+      <div class="modal-header">
+        <h3 id="deviceDetailTitle">Device Details</h3>
+        <button type="button" class="secondary-button" data-close-modal="deviceDetailModal">← Back to Monitor</button>
+      </div>
+      <div id="deviceDetailContent" class="detail-content"></div>
+    </div>
+  </div>
+
+  <div id="historyModal" class="modal-backdrop hidden" aria-hidden="true">
+    <div class="modal-panel history-panel" role="dialog" aria-modal="true" aria-labelledby="historyModalTitle">
+      <div class="modal-header">
+        <h3 id="historyModalTitle">Monitoring History</h3>
+        <button type="button" class="secondary-button" data-close-modal="historyModal">← Back to Monitor</button>
+      </div>
+      <div class="history-toolbar">
+        <div id="historyInfo" class="history-meta">Device</div>
+        <div class="time-range-group">
+          <button class="range-button live-range" type="button" data-range="LIVE">LIVE</button>
+          <button class="range-button" type="button" data-range="1H">1H</button>
+          <button class="range-button" type="button" data-range="6H">6H</button>
+          <button class="range-button" type="button" data-range="12H">12H</button>
+          <button class="range-button active" type="button" data-range="24H">24H</button>
+          <button class="range-button" type="button" data-range="48H">48H</button>
+          <button class="range-button" type="button" data-range="72H">72H</button>
+          <button class="range-button" type="button" data-range="7D">7D</button>
+        </div>
+      </div>
+      <div id="historyList" class="history-list"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" aria-live="polite"></div>
+  <script src="/app.js?v=20260922green-chart"></script>
+</body>
+</html>
